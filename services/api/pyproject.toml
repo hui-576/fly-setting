@@ -10,6 +10,11 @@ readme = "README.md"
 requires-python = ">=3.13,<3.14"
 dependencies = [
   "fastapi==0.139.0",
+  "mapbox-vector-tile==2.2.0",
+  "numpy==2.5.1",
+  "pillow==12.3.0",
+  "rasterio==1.5.0",
+  "shapely==2.1.2",
   "uvicorn==0.41.0",
 ]
 
@@ -43,3 +48,15 @@ python_version = "3.13"
 strict = true
 packages = ["fly_setting_api"]
 
+[[tool.mypy.overrides]]
+module = [
+  "google.protobuf",
+  "google.protobuf.*",
+  "mapbox_vector_tile",
+  "mapbox_vector_tile.*",
+  "rasterio",
+  "rasterio.*",
+  "shapely",
+  "shapely.*",
+]
+ignore_missing_imports = true

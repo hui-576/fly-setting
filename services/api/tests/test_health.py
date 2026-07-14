@@ -30,6 +30,13 @@ def test_health_is_declared_in_openapi() -> None:
     document = client.get("/openapi.json").json()
 
     assert document["info"]["version"] == "0.1.0"
-    assert list(document["paths"]) == ["/api/v1/health"]
-    assert list(document["paths"]["/api/v1/health"]) == ["get"]
-
+    assert {
+        path: set(path_item)
+        for path, path_item in document["paths"].items()
+    } == {
+        "/api/v1/health": {"get"},
+        "/api/v1/data-packages": {"get"},
+        "/api/v1/data-packages/install": {"post"},
+        "/api/v1/data-packages/active": {"put"},
+        "/api/v1/map/manifest": {"get"},
+    }

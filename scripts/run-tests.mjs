@@ -19,22 +19,41 @@ function run(command, args) {
 
 function readFilters(args) {
   const filters = [];
+  let dataPackage = false;
   for (let index = 0; index < args.length; index += 1) {
     if (args[index] !== "--filter") {
       throw new Error(`不支持的测试参数：${args[index]}`);
     }
     const value = args[index + 1];
     if (!value) throw new Error("--filter 必须提供工作区名称");
-    filters.push(packageAliases.get(value) ?? value);
+    if (value === "data-package") {
+      dataPackage = true;
+      filters.push("@fly-setting/map-workbench");
+    } else {
+      filters.push(packageAliases.get(value) ?? value);
+    }
     index += 1;
   }
-  return filters;
+  return { dataPackage, filters: [...new Set(filters)] };
 }
 
-const filters = readFilters(process.argv.slice(2));
+const { dataPackage, filters } = readFilters(process.argv.slice(2));
 const workspaceArguments = filters.flatMap((filter) => ["--filter", filter]);
-run(process.execPath, [pnpmCli, ...workspaceArguments, "-r", "--if-present", "run", "test"]);
+run(process.execPath, [
+  pnpmCli,
+  ...workspaceArguments,
+  ...(filters.length ? ["--fail-if-no-match"] : []),
+  "-r",
+  "--if-present",
+  "run",
+  "test",
+]);
 
-if (filters.length === 0) {
+if (dataPackage) {
+  run("uv", [
+    "run", "--project", "services/api", "--extra", "test", "pytest",
+    "services/api/tests/data_package",
+  ]);
+} else if (filters.length === 0) {
   run("uv", ["run", "--project", "services/api", "--extra", "test", "pytest"]);
 }

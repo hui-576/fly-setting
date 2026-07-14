@@ -6,10 +6,15 @@ import { join } from "node:path";
 const projectRoot = process.cwd();
 const desktopRoot = join(projectRoot, "apps", "desktop");
 const desktopEntry = join(desktopRoot, "dist", "main.js");
+const dataRoot = join(projectRoot, "test-results", "task002-data");
 
 async function runSecondInstance(executable: string): Promise<number | null> {
   const child = spawn(executable, [desktopEntry], {
-    env: { ...process.env, FLY_SETTING_API_ALLOW_LAN: "false" },
+    env: {
+      ...process.env,
+      FLY_SETTING_API_ALLOW_LAN: "false",
+      FLY_SETTING_DATA_PACKAGE_ROOT: dataRoot,
+    },
     shell: false,
     stdio: "ignore",
     windowsHide: true,
@@ -33,6 +38,7 @@ test("应用启动后真实 Mars3D、sandbox preload 与单实例锁均可用", 
     env: {
       ...process.env,
       FLY_SETTING_API_ALLOW_LAN: "false",
+      FLY_SETTING_DATA_PACKAGE_ROOT: dataRoot,
     },
     timeout: 60_000,
   });

@@ -6,14 +6,14 @@
 
 ## 当前任务
 
-TASK-001 delivered：验收提交与远端 SHA 已复核一致。准备进入 TASK-002 地理数据包安装、校验与双遮挡模式。
+TASK-002 verified_pending_push：规格、安全、代码质量、全量测试、构建与 E2E 均已通过，等待验收提交和远端同步。
 
 ## 任务状态
 
 | 任务 | 状态 | 最近证据 |
 |---|---|---|
 | TASK-001 | delivered | `c296267` 已推送；远端 SHA 一致；仓库合同检查通过 |
-| TASK-002 | pending | （无） |
+| TASK-002 | verified_pending_push | 独立规格/安全/质量复审 PASS；lint/typecheck/test/build/E2E 全通过 |
 | TASK-003 | pending | （无） |
 | TASK-004 | pending | （无） |
 | TASK-005 | pending | （无） |
@@ -36,10 +36,13 @@ TASK-001 delivered：验收提交与远端 SHA 已复核一致。准备进入 TA
 - 2026-07-15：TASK-001 通过 38 项 Desktop、18 项 Web、15 项 API 测试及 3 项 E2E；真实 Electron、Mars3D 合成像素、单实例、断网零公网、关键视口与关闭清理均已验证。
 - 2026-07-15：TASK-001 独立规格审查与代码质量审查均通过，未剩本任务阻断问题。
 - 2026-07-15：TASK-001 验收提交 `c296267e895bf9e7fd1b32ddbcb9bc25a7ca1bbe` 已推送到 `origin/feature/los-planning-v1`，`check_repository.py` 与远端 SHA 复核通过。
+- 2026-07-15：TASK-002 独立规格、安全和代码质量复审最终均为 PASS；安全复审阻断项已全部用负例和完整回归关闭。
+- 2026-07-15：TASK-002 通过 Desktop 38、Web 55、API 105 项测试，`pnpm lint`、`pnpm typecheck`、`pnpm build` 和完整 E2E 5/5 均通过。
+- 2026-07-15：E2E 以单 worker 验证 Electron、1440×900、1366×768；安装/切换版本、DTM/DSM、XYZ/Quantized Mesh/MVT、零 404 和零公网请求均通过。
 
 ## 下一动作
 
-创建或更新从 `feature/los-planning-v1` 到 `main` 的单一拉取请求；随后选择并启动 TASK-002。
+显式暂存 TASK-002 范围，创建并推送验收提交；核对远端 SHA 与仓库合同后追加交付证据并更新 PR #1。
 
 ## 阻塞
 

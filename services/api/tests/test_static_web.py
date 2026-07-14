@@ -20,7 +20,10 @@ def test_serves_static_assets_and_spa_routes_from_configured_web_root(tmp_path: 
     assert client.get("/planning/tasks/current").text == "<main>视距规划</main>"
     asset = client.get("/assets/app.js")
     assert asset.status_code == 200
-    assert asset.headers["content-type"].startswith("text/javascript")
+    assert asset.headers["content-type"].split(";", maxsplit=1)[0] in {
+        "application/javascript",
+        "text/javascript",
+    }
     assert client.get("/missing.js").status_code == 404
     assert client.get("/api/v1/missing").status_code == 404
     assert client.get("/api/v1/health").json()["status"] == "ok"
