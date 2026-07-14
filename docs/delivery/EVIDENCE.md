@@ -90,4 +90,6 @@
 
 ### 交付提交与远端同步
 
-- TASK-002 验收提交、远端引用和同步结果将在任务提交推送后追加。
+- TASK-002 验收提交：`5f6c7c65d49b695bd608f75548cea9f79db5fe4c`。
+- 远端引用：`origin/feature/los-planning-v1`。
+- 同步复核：`git ls-remote` 返回 `5f6c7c65d49b695bd608f75548cea9f79db5fe4c`，与本地 `HEAD` 一致；`check_repository.py` 通过。
