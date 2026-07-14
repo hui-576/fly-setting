@@ -1,0 +1,22 @@
+{
+  "name": "@fly-setting/desktop-shell",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && esbuild src/preload.ts --bundle --platform=node --format=cjs --outfile=dist/preload.cjs --external:electron",
+    "lint": "tsc -p tsconfig.json --noEmit --pretty false",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "electron": "43.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "esbuild": "0.28.1",
+    "typescript": "7.0.2",
+    "vitest": "^3.2.4"
+  }
+}

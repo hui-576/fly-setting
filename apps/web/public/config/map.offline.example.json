@@ -1,0 +1,5 @@
+{
+  "provider": "offline",
+  "xyzUrl": "/map/xyz/{z}/{x}/{y}.png",
+  "allowPublicFallback": false
+}
