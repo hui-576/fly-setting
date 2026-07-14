@@ -1,0 +1,62 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "fly-setting-api"
+version = "0.1.0"
+description = "Local API service for the line-of-sight planning desktop tool."
+readme = "README.md"
+requires-python = ">=3.13,<3.14"
+dependencies = [
+  "fastapi==0.139.0",
+  "mapbox-vector-tile==2.2.0",
+  "numpy==2.5.1",
+  "pillow==12.3.0",
+  "rasterio==1.5.0",
+  "shapely==2.1.2",
+  "uvicorn==0.41.0",
+]
+
+[project.optional-dependencies]
+test = [
+  "httpx==0.28.1",
+  "mypy==1.19.1",
+  "pytest==9.0.2",
+  "ruff==0.15.6",
+]
+
+[project.scripts]
+fly-setting-api = "fly_setting_api.main:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/fly_setting_api"]
+
+[tool.pytest.ini_options]
+addopts = "-ra --strict-config --strict-markers"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+packages = ["fly_setting_api"]
+
+[[tool.mypy.overrides]]
+module = [
+  "google.protobuf",
+  "google.protobuf.*",
+  "mapbox_vector_tile",
+  "mapbox_vector_tile.*",
+  "rasterio",
+  "rasterio.*",
+  "shapely",
+  "shapely.*",
+]
+ignore_missing_imports = true

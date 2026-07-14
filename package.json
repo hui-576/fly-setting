@@ -1,0 +1,22 @@
+{
+  "name": "fly-setting",
+  "version": "1.0.0",
+  "private": true,
+  "description": "现场复杂网络与视距通信智能规划工具",
+  "packageManager": "pnpm@11.7.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "lint": "pnpm -r --if-present run lint && uv run --project services/api --extra test ruff check services/api",
+    "typecheck": "pnpm -r --if-present run typecheck && uv run --project services/api --extra test mypy --config-file services/api/pyproject.toml services/api/src",
+    "test": "node scripts/run-tests.mjs",
+    "test:e2e": "playwright test",
+    "build": "pnpm -r --if-present run build && uv build --project services/api"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.61.0",
+    "@types/pngjs": "6.0.5",
+    "pngjs": "7.0.0"
+  }
+}
