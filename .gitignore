@@ -1,0 +1,33 @@
+# Local delivery/session state
+.helloagents/
+
+# Environment and credentials
+.env
+.env.*
+!.env.example
+
+# JavaScript
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+
+# Runtime data and logs
+*.db
+*.sqlite
+*.sqlite3
+logs/
+data/runtime/
+
+# IDE and operating system
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

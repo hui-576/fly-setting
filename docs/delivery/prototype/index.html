@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>现场视距通信智能规划工具</title>
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- ============ 顶部栏 ============ -->
+  <header class="topbar" data-od-id="topbar">
+    <div class="brand">
+      <span class="logo" data-icon="radio"></span>
+      <span>视距通信智能规划<small> / 系留无人机升空规划工具</small></span>
+    </div>
+    <div class="divider"></div>
+    <div class="top-task">
+      <span class="iconbtn" data-icon="folder" title="任务库"></span>
+      <span class="t-name" id="topTaskName">江夏应急通信保障演练</span>
+      <span class="tag active" id="topTaskVer">v4</span>
+    </div>
+    <div class="top-spacer"></div>
+    <div class="top-meta">
+      <span class="chip" id="chipDataPkg" title="数据包状态"><span class="dot"></span><span>数据包 湖北-江夏 就绪</span></span>
+      <span class="chip" id="chipSave"><span class="dot"></span><span id="saveText">已保存</span></span>
+      <div class="divider"></div>
+      <button class="btn sm" id="btnSave" data-od-id="btn-save"><span data-icon="save"></span>保存</button>
+      <button class="iconbtn" id="btnSettings" title="设置" data-od-id="btn-settings"><span data-icon="settings"></span></button>
+    </div>
+  </header>
+
+  <section class="workflowbar" id="workflowBar" data-od-id="planning-workflow" aria-label="升空方案规划流程">
+    <div class="workflow-title"><span>规划流程</span><strong>确定升空位置与最低高度</strong></div>
+    <ol class="workflow-steps">
+      <li><button type="button" class="workflow-step active" data-flow-step="1" data-tab="points"><span class="workflow-num">1</span><span><b>设置任务点</b><small id="flowPointMeta">0 个通信目标</small></span></button></li>
+      <li><button type="button" class="workflow-step" data-flow-step="2" data-tab="params"><span class="workflow-num">2</span><span><b>分析条件</b><small>地形、阈值与高度</small></span></button></li>
+      <li><button type="button" class="workflow-step" data-flow-step="3" data-tab="zone"><span class="workflow-num">3</span><span><b>升空范围</b><small id="flowZoneMeta">等待划定</small></span></button></li>
+      <li><button type="button" class="workflow-step" data-flow-step="4" id="flowRun"><span class="workflow-num">4</span><span><b>生成方案</b><small id="flowRunMeta">视距求解</small></span></button></li>
+      <li><button type="button" class="workflow-step" data-flow-step="5" id="flowResults" disabled><span class="workflow-num">5</span><span><b>推荐结果</b><small id="flowResultMeta">等待计算</small></span></button></li>
+    </ol>
+    <button type="button" class="btn primary workflow-cta" id="flowRunPrimary" data-od-id="generate-plan"><span data-icon="play"></span><span>生成升空方案</span></button>
+  </section>
+
+  <!-- ============ 主体三栏 ============ -->
+  <div class="body" id="body" data-od-id="workspace-body">
+
+    <!-- ---- 左侧工作区 ---- -->
+    <aside class="left" id="leftPanel" data-od-id="left-workspace">
+      <nav class="tabs" role="tablist">
+        <button class="tab active" data-tab="library" role="tab"><span data-icon="folder"></span>任务库</button>
+        <button class="tab" data-tab="points" role="tab"><span data-icon="map-pin"></span>任务点<span class="badge" id="tabPointsBadge">5</span></button>
+        <button class="tab" data-tab="params" role="tab"><span data-icon="sliders"></span>参数</button>
+        <button class="tab" data-tab="zone" role="tab"><span data-icon="shapes"></span>限制区</button>
+      </nav>
+      <div class="panel-scroll">
+
+        <!-- 任务库 -->
+        <section class="tabpane active" data-pane="library" role="tabpanel">
+          <div class="section-head">
+            <h3>任务库</h3>
+            <button class="btn sm primary" id="btnNewTask"><span data-icon="file-plus"></span>新建</button>
+          </div>
+          <div class="section-body">
+            <div class="list" id="taskList"></div>
+            <div class="hr"></div>
+            <div class="subhead" style="display:flex;justify-content:space-between;align-items:center">
+              <span>回收站</span>
+              <button class="btn sm ghost" id="btnToggleTrash"><span data-icon="trash"></span><span id="trashCount">1</span></button>
+            </div>
+            <div class="list hidden" id="trashList"></div>
+          </div>
+        </section>
+
+        <!-- 任务点 -->
+        <section class="tabpane" data-pane="points" role="tabpanel">
+          <div class="section-head">
+            <h3>任务点 <span class="count" id="pointCount">5 / 50</span></h3>
+            <div style="display:flex;gap:4px">
+              <button class="btn sm" id="btnImportPoints" title="模拟批量导入"><span data-icon="upload"></span>导入</button>
+              <button class="btn sm primary" id="btnAddPoint"><span data-icon="plus"></span>点击加点</button>
+            </div>
+          </div>
+          <div class="section-body">
+            <div class="notice info" id="addPointHint" style="display:none;margin-bottom:8px">
+              <span data-icon="crosshair"></span>
+              <div><div class="n-title">加点模式已开启</div>在地图上点击以放置任务点，天线高度默认 1.5m，可在下方编辑。</div>
+            </div>
+            <div class="list" id="pointList"></div>
+            <div class="notice warn" id="pointEmptyHint" style="display:none">
+              <span data-icon="alert-triangle"></span>
+              <div><div class="n-title">当前任务无任务点</div>点击“点击加点”在地图放置，或“导入”批量加载示例点。至少需要 1 个任务点才能计算。</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 分析参数 -->
+        <section class="tabpane" data-pane="params" role="tabpanel">
+          <div class="section-head"><h3>分析参数</h3></div>
+          <div class="section-body">
+            <div class="field">
+              <label>遮挡模式</label>
+              <div class="segmented" id="segDataMode">
+                <button data-v="DTM">DTM 裸地</button>
+                <button class="active" data-v="DSM">DSM 地表障碍</button>
+              </div>
+              <div class="hint" id="dataModeHint">DSM 计入建筑与植被等地表障碍，结果更保守。</div>
+            </div>
+
+            <div class="field">
+              <label>部分覆盖阈值 <span class="mono" id="partialThVal">70%</span></label>
+              <div class="slider-row">
+                <input type="range" id="partialTh" min="1" max="99" step="1" value="70">
+              </div>
+              <div class="hint">候选点被判为“部分覆盖”需<b>严格大于</b>该阈值的任务点占比。范围 1%–99%。</div>
+            </div>
+
+            <div class="field">
+              <label>有效地球半径系数 k</label>
+              <div class="slider-row">
+                <input type="range" id="kFactor" min="0.50" max="2.00" step="0.01" value="1.33">
+                <input type="number" class="slider-val mono" id="kFactorNum" min="0.50" max="2.00" step="0.01" value="1.33">
+              </div>
+              <div class="hint">默认 4/3 ≈ 1.33（标准大气折射）。范围 0.50–2.00，精度 0.01。</div>
+            </div>
+
+            <div class="field">
+              <label>连续覆盖接收端高度</label>
+              <div class="slider-row">
+                <input type="range" id="rxHeight" min="0" max="500" step="0.1" value="1.5">
+                <input type="number" class="slider-val mono" id="rxHeightNum" min="0" max="500" step="0.1" value="1.5">
+              </div>
+              <div class="hint">30km 连续覆盖分析时接收端离地高度（m）。默认 1.5m。</div>
+            </div>
+
+            <div class="field">
+              <label>无人机高度档位</label>
+              <div class="segmented pills" id="tierPills">
+                <button class="active" data-v="0">0</button>
+                <button class="active" data-v="50">50</button>
+                <button class="active" data-v="100">100</button>
+                <button class="active" data-v="150">150</button>
+                <button class="active" data-v="200">200</button>
+                <button class="active" data-v="250">250</button>
+              </div>
+              <div class="hint">仅允许 0 / 50 / 100 / 150 / 200 / 250m 六档，不支持自定义档位。点选启用/停用参与计算的档位。</div>
+            </div>
+            <div class="notice danger" id="paramError" style="display:none">
+              <span data-icon="alert-circle"></span>
+              <div><div class="n-title">参数校验未通过</div><span id="paramErrorText"></span></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 升空限制区域 -->
+        <section class="tabpane" data-pane="zone" role="tabpanel">
+          <div class="section-head"><h3>升空限制区域</h3></div>
+          <div class="section-body">
+            <div class="field">
+              <label>候选范围模式</label>
+              <div class="segmented" id="segZoneMode">
+                <button class="active" data-v="road">道路中心线</button>
+                <button data-v="polygon">绘制多边形</button>
+              </div>
+            </div>
+
+            <div id="zoneRoad">
+              <div class="field">
+                <label>道路缓冲半径 <span class="mono" id="roadBufVal">40m</span></label>
+                <div class="slider-row"><input type="range" id="roadBuf" min="10" max="120" step="5" value="40"></div>
+                <div class="hint">沿江夏大道中心线两侧缓冲生成候选升空点。</div>
+              </div>
+              <div class="field">
+                <label>候选点间距 <span class="mono" id="roadStepVal">25m</span></label>
+                <div class="slider-row"><input type="range" id="roadStep" min="10" max="100" step="5" value="25"></div>
+              </div>
+              <button class="btn block" id="btnBuildRoad"><span data-icon="route"></span>生成道路候选范围</button>
+            </div>
+
+            <div id="zonePolygon" style="display:none">
+              <div class="notice info">
+                <span data-icon="pencil"></span>
+                <div><div class="n-title">在地图上绘制</div>点击“开始绘制”，在地图逐点点击围出不规则多边形，双击或点“完成”闭合。</div>
+              </div>
+              <div style="display:flex;gap:6px;margin:8px 0">
+                <button class="btn" id="btnDrawStart"><span data-icon="pencil"></span>开始绘制</button>
+                <button class="btn" id="btnDrawUndo" disabled><span data-icon="rotate-ccw"></span>撤销</button>
+                <button class="btn danger" id="btnDrawClear" disabled><span data-icon="trash-2"></span>清除</button>
+              </div>
+              <button class="btn block primary" id="btnDrawDone" disabled><span data-icon="check"></span>完成并生成候选</button>
+            </div>
+
+            <div class="hr"></div>
+            <div class="kv"><span class="k">候选点预估数量</span><span class="v mono" id="estCandidates">—</span></div>
+            <div class="kv"><span class="k">唯一地面位置</span><span class="v mono" id="estUnique">—</span></div>
+            <button class="btn block primary" id="btnCalculate" style="margin-top:10px"><span data-icon="play"></span>开始视距计算</button>
+            <div class="notice danger" id="candLimitError" style="display:none;margin-top:8px">
+              <span data-icon="alert-circle"></span>
+              <div><div class="n-title">候选点超过上限</div>唯一候选点 <b id="candLimitNum">—</b> 个，超过 50,000 上限。请缩小范围或增大间距后重试，计算已禁用。</div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </aside>
+
+    <!-- ---- 中央地图 ---- -->
+    <main class="map-wrap" id="mapWrap" data-od-id="map-canvas">
+      <canvas id="mapCanvas"></canvas>
+
+      <!-- 启动自检 / 加载 -->
+      <div class="map-loading" id="mapLoading">
+        <span data-icon="loader" class="spin" data-icon-cls=""></span>
+        <div class="boot-log" id="bootLog"></div>
+        <div class="bar"><i id="bootBar"></i></div>
+      </div>
+
+      <!-- 地图工具条 左上 -->
+      <div class="map-tools tl" data-od-id="map-tools-view">
+        <button class="iconbtn" id="mZoomIn" title="放大"><span data-icon="zoom-in"></span></button>
+        <button class="iconbtn" id="mZoomOut" title="缩小"><span data-icon="zoom-out"></span></button>
+        <button class="iconbtn" id="mLocate" title="回到任务中心"><span data-icon="locate"></span></button>
+        <span class="sep"></span>
+        <button class="iconbtn" id="mMode3d" title="三维地形视角"><span data-icon="box"></span></button>
+        <button class="iconbtn active" id="mModeTop" title="真实卫星底图"><span data-icon="grid"></span></button>
+      </div>
+
+      <!-- 地图工具条 右上 -->
+      <div class="map-tools tr">
+        <button class="iconbtn" id="mLayers" title="图层控制"><span data-icon="layers"></span></button>
+        <button class="iconbtn" id="mDraw" title="绘制限制区"><span data-icon="pencil"></span></button>
+        <button class="iconbtn" id="mClear" title="清除绘制/覆盖"><span data-icon="trash-2"></span></button>
+      </div>
+
+      <!-- 图层弹层 -->
+      <div class="layer-pop hidden" id="layerPop">
+        <h4>图层</h4>
+        <div id="layerRows"></div>
+      </div>
+
+      <!-- 绘制指示 -->
+      <div class="draw-hint hidden" id="drawHint">
+        <span data-icon="pencil"></span><span id="drawHintText">绘制模式：点击添加顶点</span>
+        <button class="btn sm" id="drawHintDone">完成</button>
+        <button class="btn sm" id="drawHintCancel">取消</button>
+      </div>
+
+      <!-- 加点指示 -->
+      <div class="draw-hint hidden" id="addHint">
+        <span data-icon="crosshair"></span><span>加点模式：在地图点击放置任务点</span>
+        <button class="btn sm" id="addHintDone">结束</button>
+      </div>
+
+      <!-- 地图内 toast (图层失败等) -->
+      <div class="map-toast danger hidden" id="mapToast">
+        <span data-icon="alert-triangle"></span>
+        <div><div class="mt-title" id="mapToastTitle">地图图层加载失败</div><span id="mapToastText">影像瓦片读取超时。</span></div>
+        <button class="btn sm" id="mapToastBtn">重试</button>
+      </div>
+
+      <!-- 图例 -->
+      <div class="legend" id="legend" data-od-id="map-legend">
+        <button class="iconbtn sm legend-tgl" id="legendTgl" title="收起图例"><span data-icon="chevron-down"></span></button>
+        <h4>图例</h4>
+        <div class="legend-body" id="legendBody">
+          <div class="lg"><span class="mk round" style="background:#2563eb"></span>任务点</div>
+          <div class="lg"><span class="mk" style="background:#15884b;transform:rotate(45deg)"></span>候选点 · 100% 可达</div>
+          <div class="lg"><span class="mk" style="background:#d98613;transform:rotate(45deg)"></span>候选点 · 部分覆盖</div>
+          <div class="lg"><span class="mk" style="background:#21b45e"></span>30km 可通信</div>
+          <div class="lg"><span class="mk" style="background:#e2433f"></span>30km 不可通信</div>
+        </div>
+      </div>
+
+      <!-- 坐标读数 -->
+      <div class="coord-readout" id="coordReadout">—</div>
+      <div class="map-attribution">离线原型示意底图</div>
+
+      <!-- 折叠把手 -->
+      <button type="button" class="collapse-handle left" id="handleLeft" title="折叠或展开左侧工作区" aria-label="折叠或展开左侧工作区"><span data-icon="chevron-left"></span></button>
+      <button type="button" class="collapse-handle right" id="handleRight" title="折叠或展开右侧检查器" aria-label="折叠或展开右侧检查器"><span data-icon="chevron-right"></span></button>
+    </main>
+
+    <!-- ---- 右侧检查器 ---- -->
+    <aside class="right" id="rightPanel" data-od-id="inspector">
+      <div class="inspector-head">
+        <span class="ih-ic" id="inspIcon" data-icon="info"></span>
+        <div style="flex:1;min-width:0">
+          <div class="ih-t" id="inspTitle">检查器</div>
+          <div class="ih-s" id="inspSub">未选择对象</div>
+        </div>
+        <button class="iconbtn" id="inspClose" title="收起检查器"><span data-icon="x"></span></button>
+      </div>
+      <div class="inspector-body" id="inspBody"></div>
+    </aside>
+
+  </div>
+
+  <!-- ============ 底部状态区 ============ -->
+  <footer class="statusbar" data-od-id="statusbar">
+    <span class="st-item"><span data-icon="database"></span>候选点 <b class="st-strong tnum" id="sbCandCount">0</b></span>
+    <span class="st-item"><span data-icon="check-circle"></span>结果 <b class="st-strong tnum" id="sbResultCount">—</b></span>
+    <span class="st-item" id="sbStageWrap" style="display:none">
+      <span class="stage-dots" id="stageDots"></span>
+    </span>
+    <div class="progress-inline hidden" id="sbProgress">
+      <span class="mono tnum" id="sbStageName">准备数据</span>
+      <div class="bar"><i id="sbBar"></i></div>
+      <span class="mono tnum" id="sbPct">0%</span>
+      <span class="mono tnum" id="sbEta">剩余 —</span>
+    </div>
+    <div class="sb-spacer"></div>
+    <span class="st-item" id="sbPhaseInfo"></span>
+    <button class="btn sm danger hidden" id="sbCancel"><span data-icon="x"></span>取消计算</button>
+    <button class="btn sm hidden" id="sbResume"><span data-icon="play"></span>继续</button>
+    <button class="btn sm hidden" id="sbRestart"><span data-icon="refresh-cw"></span>从头计算</button>
+    <span class="st-item mono" id="sbStatusText">就绪</span>
+  </footer>
+
+  <!-- 状态调试 FAB -->
+  <button class="debug-fab hidden" id="debugFab" title="状态调试面板" aria-hidden="true" tabindex="-1"><span data-icon="bug"></span></button>
+  <div class="debug-panel" id="debugPanel" aria-hidden="true">
+    <div class="dp-head">
+      <span data-icon="bug"></span><h4>状态调试面板</h4>
+      <button class="iconbtn" id="debugClose"><span data-icon="x"></span></button>
+    </div>
+    <div class="dp-body">
+      <div class="dp-note">兜底用途：一键切换到任意界面状态以便演示。真实操作流程同样会自然进入这些状态。</div>
+      <div class="dbg-grid" id="debugGrid"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 模态挂载点 -->
+<div id="modalMount"></div>
+<div class="toast-stack" id="toastStack"></div>
+
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/terrain-map.js"></script>
+<script src="assets/js/app-state.js"></script>
+<script src="assets/js/app-ui.js"></script>
+<script src="assets/js/app-a11y.js"></script>
+<script src="assets/js/app-layout.js"></script>
+<script src="assets/js/app-workflow.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

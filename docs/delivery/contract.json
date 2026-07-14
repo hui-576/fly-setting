@@ -1,0 +1,211 @@
+{
+  "schema_version": 3,
+  "project": {
+    "name": "现场复杂网络与视距通信智能规划工具",
+    "baseline_version": "1.0.0"
+  },
+  "artifacts_root": "docs/delivery",
+  "seal_ledger": "docs/delivery/BASELINE_LEDGER.jsonl",
+  "qaMode": "full",
+  "qaFocus": [
+    "Mars3D 唯一地图引擎与离线资源",
+    "批量视距算法、DTM/DSM 端点和曲率语义",
+    "任务持久化、原子发布与检查点恢复",
+    "50,000 候选点边界与性能",
+    "只读接口安全和任务包输入安全",
+    "Windows 离线安装与关键视口交互"
+  ],
+  "phases": {
+    "requirements": {
+      "status": "approved",
+      "artifacts": [
+        "docs/delivery/requirements.md",
+        "CONTEXT.md"
+      ],
+      "approval": {
+        "confirmed": true,
+        "by": "用户",
+        "at": "2026-07-14"
+      }
+    },
+    "solution_design": {
+      "status": "approved",
+      "artifacts": [
+        "docs/delivery/plan.md"
+      ],
+      "approval": {
+        "confirmed": true,
+        "by": "用户",
+        "at": "2026-07-14"
+      }
+    },
+    "prototype": {
+      "status": "approved",
+      "artifacts": [
+        "docs/delivery/DESIGN.md",
+        "docs/delivery/prototype/index.html"
+      ],
+      "approval": {
+        "confirmed": true,
+        "by": "用户",
+        "at": "2026-07-15"
+      },
+      "review": {
+        "routes": [
+          "index.html 单页 GIS 地图工作台"
+        ],
+        "flows": [
+          "任务库与任务点编辑",
+          "分析参数与升空限制区域",
+          "道路候选生成、视距计算与推荐结果",
+          "候选选择与 30km 连续覆盖"
+        ],
+        "viewports": [
+          "1440x900 Chrome 断网核验",
+          "1366x768 Chrome 断网核验"
+        ],
+        "states": [
+          "loading",
+          "empty",
+          "error",
+          "disabled",
+          "danger",
+          "completed",
+          "coverage"
+        ],
+        "evidence": [
+          "docs/delivery/DESIGN.md 核验记录与用户批准",
+          ".helloagents/prototype-approved-1440.png",
+          ".helloagents/prototype-approved-1366.png",
+          "稳定快照远程 URL 扫描结果为零",
+          "用户确认原型仅作为视觉交互参考，生产必须使用真实 Mars3D"
+        ]
+      }
+    },
+    "delivery_plan": {
+      "status": "approved",
+      "artifacts": [
+        "docs/delivery/tasks.md",
+        "docs/delivery/contract.json"
+      ],
+      "approval": {
+        "confirmed": true,
+        "by": "用户",
+        "at": "2026-07-15T01:07:23+08:00"
+      }
+    }
+  },
+  "runtime": {
+    "state": "docs/delivery/STATE.md",
+    "evidence": "docs/delivery/EVIDENCE.md",
+    "decisions": "docs/delivery/DECISIONS.md"
+  },
+  "repository": {
+    "url": "https://github.com/hui-576/fly-setting.git",
+    "remote": "origin",
+    "provider": "github",
+    "base_branch": "main",
+    "working_branch": "feature/los-planning-v1",
+    "commit_policy": "after_each_verified_task",
+    "push_policy": "after_each_verified_task",
+    "push_authorized": true,
+    "pull_request": {
+      "enabled": true,
+      "create_or_update_authorized": true,
+      "merge_policy": "after_root_acceptance",
+      "merge_strategy": "squash",
+      "merge_authorized": true,
+      "required_checks": [
+        "lint",
+        "typecheck",
+        "unit-tests",
+        "integration-tests",
+        "e2e",
+        "build"
+      ],
+      "delete_working_branch_after_merge": true
+    },
+    "allow_force_push": false,
+    "allow_direct_base_push": false
+  },
+  "execution": {
+    "authorized": true,
+    "authorized_by": "用户",
+    "authorized_at": "2026-07-15T01:07:23+08:00",
+    "goal": {
+      "objective": "依据 docs/delivery/contract.json 封存的 1.0.0 基线，在专用工作分支完成现场复杂网络与视距通信智能规划工具的实现、测试、逐任务推送、拉取请求和根验收后合并。",
+      "contract_path": "docs/delivery/contract.json",
+      "baseline_version": "1.0.0",
+      "in_scope": [
+        "Windows 单用户单实例桌面应用",
+        "真实 Mars3D 地图工作台与开发/离线数据提供方",
+        "DTM/DSM 数据包和 25m 候选生成",
+        "批量视距、最低高度、检查点续算与 30km 覆盖",
+        "本地任务库、历史、任务包、回收站和只读归档",
+        "本机默认与局域网可选的只读 REST JSON/GeoJSON 接口",
+        "离线安装包、自动化测试、性能测量和交付证据"
+      ],
+      "out_of_scope": [
+        "账号、角色、组织、审批和多租户管理",
+        "多无人机协同与航线飞行控制",
+        "非视距中继、通信链路预算和频谱规划",
+        "生产写接口和远程云服务",
+        "现场通信网络分析模型方案 V1.11 及其清单",
+        "由 Codex 伪造真实湖北地理数据或验收硬件性能结论"
+      ],
+      "done_when": [
+        "TASK-001 至 TASK-011 全部通过任务验收并逐项推送",
+        "REQ-001 至 REQ-021 至少由一个已通过任务和证据覆盖",
+        "真实 Mars3D 关键流程与稳定原型的信息架构一致",
+        "根验证命令通过且断网运行无公网请求",
+        "单一拉取请求必需检查通过、无未解决冲突",
+        "根验收证据和已知外部数据/硬件限制已提交并推送",
+        "按授权方式完成 squash 合并并读取基础分支最终提交"
+      ],
+      "verification": [
+        "pnpm install --frozen-lockfile",
+        "pnpm lint",
+        "pnpm typecheck",
+        "pnpm test",
+        "python -m pytest",
+        "pnpm test:e2e",
+        "pnpm build",
+        "python scripts/verify_offline_bundle.py",
+        "python scripts/benchmark_analysis.py --profile acceptance"
+      ]
+    },
+    "decision_policy": {
+      "normal_implementation": "proceed_and_record",
+      "scope_change": "forbidden_without_new_baseline",
+      "material_conflict": "block_and_request_resolution",
+      "missing_external_input": "block",
+      "irreversible_action": "require_explicit_authorization"
+    }
+  },
+  "baseline": {
+    "sealed": true,
+    "version": "1.0.0",
+    "sealed_by": "用户",
+    "sealed_at": "2026-07-15T01:07:49+08:00",
+    "contract_digest": "438ea5505dbb13e8b4cd7b1075585bfda0019312ac71a5f3c2a791d826985acb",
+    "files": {
+      "CONTEXT.md": "bd6e0abb50bad462ddbdf83eb35fd5ee6efd20de91d4381ffc91c8ce6ac0a124",
+      "docs/delivery/DESIGN.md": "620ecbcfb5cf0dc0f85ff2321c1762cdeb7726e9b7126b27c3887615593088e5",
+      "docs/delivery/plan.md": "89bdb6a4b56276c22413ed21a097efe1d133a648f53f5d6262f6da4ffb321205",
+      "docs/delivery/prototype/README.md": "c4f610fbcec5f6aed46e64b8006617563ea13042ff72256b249fd02e8fcde4d3",
+      "docs/delivery/prototype/assets/css/styles.css": "6451fd0a12dd8ab59ac7fdd1a6fe151d0daaa22910f74a97fd6b208d4d7a32e6",
+      "docs/delivery/prototype/assets/js/app-a11y.js": "93220be7cc369dbd9c2dd26c00020b6ee11bd6f1fdad48b13178bb37cf2ddcd1",
+      "docs/delivery/prototype/assets/js/app-layout.js": "f48a1308b1b40269e10980d294414b7c6a06a19f607b47dd6a8c48bd43b5f9ec",
+      "docs/delivery/prototype/assets/js/app-state.js": "42bfa11777e66dc3ef92ba4bfe6f498da3eeb76b005e872b18c01944f176cdf7",
+      "docs/delivery/prototype/assets/js/app-ui.js": "dc16658ec95dec91a78e1ede99df804d716f7b101098ea20c9eb2670161f8367",
+      "docs/delivery/prototype/assets/js/app-workflow.js": "f5ad15f612545c740fb0479a76696d797dd1aaecfbf39d390f059ec0adfacba8",
+      "docs/delivery/prototype/assets/js/app.js": "dc12a4b902260b3d04d049f896efb534154e5cc151cc71d6e0b2b40d959e00df",
+      "docs/delivery/prototype/assets/js/data.js": "6f0d71111d9eacfa8cb16779d9f28ccd7deb3bbe560bbfa351a68a2255b1822b",
+      "docs/delivery/prototype/assets/js/icons.js": "44682920f8680008a1faa20fb154a6ac2ccc090860e93e59c00cb0203e557e59",
+      "docs/delivery/prototype/assets/js/terrain-map.js": "01bc5b5808e44c87315bda18afdd57479e3d4ce1da5195acf0bc6477dc950e55",
+      "docs/delivery/prototype/index.html": "39f54503443d6c1e71452ed522896edab7af2f442580b640253228647a3ebbb2",
+      "docs/delivery/requirements.md": "76138bd335b140380374d231284e5145c800c1178e4c5fe28489603846cc0260",
+      "docs/delivery/tasks.md": "2c6aae97a8b87130edf8b1ad1b689edaee30b30c04d3f67f2a6788d93064c7a3"
+    }
+  }
+}
