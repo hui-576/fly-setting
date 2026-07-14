@@ -45,3 +45,9 @@
 - 正式本地 XYZ、Quantized Mesh、矢量道路与数据包损坏诊断由 TASK-002 交付。
 - Windows 自包含安装包、完整第三方许可证归档和干净机离线验收由 TASK-011 交付。
 - 当前未使用真实湖北项目数据，不声明后续 5 分钟计算或 1 秒覆盖加载性能已通过。
+
+### 交付提交与远端同步
+
+- TASK-001 验收提交：`c296267e895bf9e7fd1b32ddbcb9bc25a7ca1bbe`。
+- 远端引用：`origin/feature/los-planning-v1`。
+- 同步复核：`git ls-remote` 返回 `c296267e895bf9e7fd1b32ddbcb9bc25a7ca1bbe`，与本地 `HEAD` 一致；`check_repository.py` 通过。

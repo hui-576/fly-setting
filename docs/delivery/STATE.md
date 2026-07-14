@@ -6,13 +6,13 @@
 
 ## 当前任务
 
-TASK-001 verified_pending_push：实现与验证已完成，规格审查和代码质量审查均通过，等待任务提交、推送和远端 SHA 复核。
+TASK-001 delivered：验收提交与远端 SHA 已复核一致。准备进入 TASK-002 地理数据包安装、校验与双遮挡模式。
 
 ## 任务状态
 
 | 任务 | 状态 | 最近证据 |
 |---|---|---|
-| TASK-001 | verified_pending_push | lint/typecheck/test/build 全过；E2E 3/3；规格与质量独立复审通过 |
+| TASK-001 | delivered | `c296267` 已推送；远端 SHA 一致；仓库合同检查通过 |
 | TASK-002 | pending | （无） |
 | TASK-003 | pending | （无） |
 | TASK-004 | pending | （无） |
@@ -35,10 +35,11 @@ TASK-001 verified_pending_push：实现与验证已完成，规格审查和代�
 - 2026-07-15：`check_repository.py` 与 `check_readiness.py` 均通过；创建唯一系统 goal `019f5fd8-4787-7471-88cc-41c47ffbe9aa`。
 - 2026-07-15：TASK-001 通过 38 项 Desktop、18 项 Web、15 项 API 测试及 3 项 E2E；真实 Electron、Mars3D 合成像素、单实例、断网零公网、关键视口与关闭清理均已验证。
 - 2026-07-15：TASK-001 独立规格审查与代码质量审查均通过，未剩本任务阻断问题。
+- 2026-07-15：TASK-001 验收提交 `c296267e895bf9e7fd1b32ddbcb9bc25a7ca1bbe` 已推送到 `origin/feature/los-planning-v1`，`check_repository.py` 与远端 SHA 复核通过。
 
 ## 下一动作
 
-显式暂存 TASK-001 范围文件，提交并推送工作分支；核对远端 SHA 后写入交付提交证据并把 TASK-001 标记为 delivered。
+创建或更新从 `feature/los-planning-v1` 到 `main` 的单一拉取请求；随后选择并启动 TASK-002。
 
 ## 阻塞
 
